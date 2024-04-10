@@ -1,0 +1,33 @@
+{
+  "name": "payment-microservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "build": "tsc",
+    "serve": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.2",
+    "express": "^4.19.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.11.0",
+    "@types/cors": "^2.8.17",
+    "@types/mongoose": "^5.11.97",
+    "aws-sdk": "^2.1589.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "multer": "^1.4.5-lts.1",
+    "prisma": "^5.11.0",
+    "stripe": "^14.24.0",
+    "zod": "^3.22.4"
+  }
+}

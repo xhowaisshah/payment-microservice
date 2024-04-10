@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum PaymentsType {
+  SUBSCRIPTION
+  SINGLE_TRACK
+  STORAGE
+}
+
+
+model Users {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstname             String
+  lastname              String
+  email                 String
+  countrycode           Int?
+  phoneno               String?
+  roleId                Int
+  labelName             String?
+  password              String
+  noOfMonthlyListeners  Int?
+  spotifyUrl            String?
+  howDidYouKnow         Int
+  howDidYouKnowText     String?
+  instaUrl              String?
+  userName              String
+  genre                 String
+  beatSpecialties       String[]
+  loopSpecialties       String[]
+  profilePic            String
+  isPaid                Boolean
+  isPreSignUpUser       Boolean
+  accountStatus         String
+  isSoundPackAllowed    Boolean
+  createdAt             DateTime
+  updatedAt             DateTime
+  checkOuts            Payments[]
+  customerId          String?
+}
+
+model Payments {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  payments_type        PaymentsType 
+  userId               String   @db.ObjectId
+  user                 Users @relation(fields: [userId], references: [id])
+  customerId          String?
+  amount               Int
+  paymentDate          DateTime
+  paymentMethod        String
+  status               String
+  createdAt            DateTime
+  updatedAt            DateTime
+}
