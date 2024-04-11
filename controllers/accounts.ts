@@ -30,8 +30,15 @@ export const createConnectAccount = async (req: Request, res: Response) => {
                 support_phone: contactNumber,
             }
         });
+
+        const link = await stripe.accountLinks.create({
+            account: account.id,
+            refresh_url: 'http://strip.local.com/reauth',
+            return_url: 'http://stripe.local.con/return',
+            type: 'account_onboarding',
+        });
         
-        return res.json({ success: true, account, message: 'Account created successfully!' });
+        return res.json({ success: true, account, link,message: 'Account created successfully!' });
     } catch (error: any) {
         return res.status(500).json({ error: error.message });
     }
@@ -59,7 +66,7 @@ export const createExpressAccount = async (req: Request, res: Response) => {
         });
 
         const account = await stripe.accounts.create({
-            type: 'express',
+            type: 'standard',
             country,
             email,
             capabilities: {

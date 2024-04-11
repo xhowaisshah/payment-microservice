@@ -3,9 +3,7 @@ import Stripe from "stripe";
 import { createCardSchema, createCustomerSchema, createPaymentSchema, deleteCardSchema, errorToMessage, updateCardSchema } from "../lib/validations";
 import { createCustomer, customerExists, recordPayment } from "../lib/dbActions";
 import { PaymentsType } from "@prisma/client";
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-    apiVersion: "2023-10-16",
-});
+const stripe = new Stripe(process.env.STRIPE_TEST_SECRET_KEY as string);
 
 /**
  * Route to create a new customer in Stripe.
