@@ -14,31 +14,38 @@ export const createConnectAccount = async (req: Request, res: Response) => {
 
         const { email, password, bussinessName, street, state, country, contactNumber } = validatedFields.data;
         const account = await stripe.accounts.create({
-            type: 'standard',
+            type: 'custom',
             email,
             country,
             business_type: 'individual',
             business_profile: {
                 name: bussinessName,
                 support_address: {
-                    city: '', 
+                    city: '',
                     line1: street,
                     postal_code: '',
                     state,
                     country,
                 },
                 support_phone: contactNumber,
-            }
+            },
+            capabilities: {
+                transfers: { requested: true },
+                card_payments: { requested: true },
+            },
+            tos_acceptance: req.ip
+                ? { date: Math.floor(Date.now() / 1000), ip: req.ip }
+                : undefined,
         });
 
         const link = await stripe.accountLinks.create({
             account: account.id,
-            refresh_url: 'http://strip.local.com/reauth',
-            return_url: 'http://stripe.local.con/return',
+            refresh_url: `${process.env.REACT_APP_URL}/settings`,
+            return_url: `${process.env.REACT_APP_URL}/settings`,
             type: 'account_onboarding',
         });
-        
-        return res.json({ success: true, account, link,message: 'Account created successfully!' });
+
+        return res.json({ success: true, account, link, message: 'Account created successfully!' });
     } catch (error: any) {
         return res.status(500).json({ error: error.message });
     }
