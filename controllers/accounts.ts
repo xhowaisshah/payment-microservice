@@ -14,7 +14,7 @@ export const createConnectAccount = async (req: Request, res: Response) => {
 
         const { email, password, bussinessName, street, state, country, contactNumber } = validatedFields.data;
         const account = await stripe.accounts.create({
-            type: 'custom',
+            type: 'express',
             email,
             country,
             business_type: 'individual',
@@ -32,11 +32,9 @@ export const createConnectAccount = async (req: Request, res: Response) => {
             capabilities: {
                 transfers: { requested: true },
                 card_payments: { requested: true },
-            },
-            tos_acceptance: req.ip
-                ? { date: Math.floor(Date.now() / 1000), ip: req.ip }
-                : undefined,
+            }
         });
+
 
         const link = await stripe.accountLinks.create({
             account: account.id,
@@ -44,6 +42,7 @@ export const createConnectAccount = async (req: Request, res: Response) => {
             return_url: `${process.env.REACT_APP_URL}/settings`,
             type: 'account_onboarding',
         });
+
 
         return res.json({ success: true, account, link, message: 'Account created successfully!' });
     } catch (error: any) {
@@ -94,6 +93,18 @@ export const createExpressAccount = async (req: Request, res: Response) => {
     } catch (error: any) {
         return res.status(500).json({ success: false, error: error.message });
     }
+}
+
+export const login = async (req: Request, res: Response) => {
+    accountsRouter.post('/login', async (req: Request, res: Response) => {
+        try{
+    
+            const login = await stripe.accounts.createLoginLink('acct_1P4NTUQ2VhlRjFsT')
+            res.json({ success: true, login });
+        } catch(error: any) {
+            return res.status(500).json({ success: false, error: error.message }); 
+        }
+    })
 }
 
 export default accountsRouter;
