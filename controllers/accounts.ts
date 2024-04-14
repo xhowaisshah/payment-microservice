@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import Stripe from "stripe";
 import { createConnectAccountSchema, errorToMessage } from "../lib/validations";
 
-const stripe = new Stripe(process.env.STRIPE_TEST_SECRET_KEY as string);
+const stripe = new Stripe('sk_test_51P09FeL5ASj1GibM3uZZxryaCuFDYs98MTxnBTHCuvUg55jyMEhjrsjHGISN4313h3cy8A0GsPuRS7iF40YL0Oyv00gq5Rn4cX');
 const accountsRouter: Router = Router();
 
 export const createConnectAccount = async (req: Request, res: Response) => {

@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { createCardSchema, createCustomerSchema, createPaymentSchema, createSubscriptionSchema, deleteCardSchema, errorToMessage, updateCardSchema } from "../lib/validations";
 import { createCustomer, customerExists, recordPayment } from "../lib/dbActions";
 import { PaymentsType } from "@prisma/client";
-const stripe = new Stripe(process.env.STRIPE_TEST_SECRET_KEY as string);
+const stripe = new Stripe('sk_test_51P09FeL5ASj1GibM3uZZxryaCuFDYs98MTxnBTHCuvUg55jyMEhjrsjHGISN4313h3cy8A0GsPuRS7iF40YL0Oyv00gq5Rn4cX');
 
 /**
  * Route to create a new customer in Stripe.
@@ -134,13 +134,20 @@ export const deleteCard = async (req: Request, res: Response) => {
 
     try{
 
-        const card = await stripe.customers.retrieveSource(
+        const sources = await stripe.customers.listSources(
+            customerId,
+            { object: 'card', limit: 100 } 
+        );
+        
+        sources.data.length === 1 && res.status(400).json({ success: false, message: 'Cannot delete last card' });
+
+       const deletedCard = await stripe.customers.deleteSource(
             customerId,
             cardId
         );
-        res.json({ success: true, message: 'Card fetched successfully', card });
+        res.json({ success: true, message: 'Card deleted successfully', deletedCard });
     } catch (error: any) {
-        res.status(500).json({ success: false, message: 'Error getting card', error: error.message });
+        res.status(500).json({ success: false, message: 'Error deleting card', error: error.message });
     }
 };
 
