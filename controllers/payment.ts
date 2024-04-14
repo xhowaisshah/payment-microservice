@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import Stripe from "stripe";
-import { createCardSchema, createCustomerSchema, createPaymentSchema, deleteCardSchema, errorToMessage, updateCardSchema } from "../lib/validations";
+import { createCardSchema, createCustomerSchema, createPaymentSchema, createSubscriptionSchema, deleteCardSchema, errorToMessage, updateCardSchema } from "../lib/validations";
 import { createCustomer, customerExists, recordPayment } from "../lib/dbActions";
 import { PaymentsType } from "@prisma/client";
 const stripe = new Stripe(process.env.STRIPE_TEST_SECRET_KEY as string);
@@ -227,3 +227,34 @@ export const getDefaultCard = async (req: Request, res: Response) =>  {
     }
 }
 
+
+export const createSubscription = async (req: Request, res: Response) => {
+
+    const validatedFields = createSubscriptionSchema.safeParse(req.body);
+    if (!validatedFields.success) {
+        return res.status(400).json({ success: false, error: "Validation error", message: errorToMessage(validatedFields.error) });
+    }
+
+    const { customerId, priceId, token } = validatedFields.data;
+
+    try {
+
+        const subscription = await stripe.subscriptions.create({
+
+            customer: customerId,
+            items: [{ price: priceId }],
+            payment_behavior: "default_incomplete",
+            expand: ['latest_invoice.payment_intent']
+        })
+
+        const customer = await stripe.customers.retrieve(customerId);
+        
+        res.json({
+            success: true, message: 'Subscription created successfully', subscriptionId: subscription.id,
+            clientSecret: subscription.latest_invoice,
+            methodId: customer
+        });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: 'Error processing payment', error: error.message });
+    }
+}

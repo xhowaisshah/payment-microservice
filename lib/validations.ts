@@ -51,6 +51,13 @@ const createConnectAccountSchema = z.object({
     contactNumber: z.string().min(11, 'Contact number is required'),
 })
 
+const createSubscriptionSchema = z.object({
+    customerId: z.string().min(1, 'Customer ID is required'),
+    planId: z.string().optional(),
+    priceId: z.string().min(1, 'Price ID is required'),
+    token: z.any().optional(),
+})
+
 const errorToMessage = (error: z.ZodError) => {
     const issues = error.errors.map((e) => ({
       path: e.path.length > 0 ? e.path.join(".") : "root",
@@ -62,5 +69,5 @@ const errorToMessage = (error: z.ZodError) => {
     };
 };
 
-export { createCustomerSchema, createCardSchema, createPaymentSchema, deleteCardSchema, updateCardSchema, createConnectAccountSchema, errorToMessage };
+export { createCustomerSchema, createCardSchema, createPaymentSchema, deleteCardSchema, updateCardSchema, createConnectAccountSchema, createSubscriptionSchema, errorToMessage };
 

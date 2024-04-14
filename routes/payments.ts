@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getDefaultCard, setDefaultCard } from "../controllers/payment";
+import { createSubscription, getDefaultCard, setDefaultCard } from "../controllers/payment";
 const { addCustomer, addCard, getCardList, getCard, deleteCard, customPayment } = require("../controllers/payment");
 
 
@@ -20,5 +20,7 @@ paymentRouter.get('/get-default-card/:customerId', getDefaultCard);
 paymentRouter.post('/delete-card', deleteCard);
 
 paymentRouter.post('/custom-payment', customPayment);
+
+paymentRouter.post('/create-subscription', createSubscription);
 
 export default paymentRouter;
